@@ -14,6 +14,7 @@ Public Class clsAPBackfeedMonitor
     Public Event BackfeedResultsFoundEvent(ByVal vMonitor As clsAPBackfeedMonitor)
     Public Event BackfeedResultsNotFoundEvent(ByVal vMonitor As clsAPBackfeedMonitor)
     Public Event DateChangedEvent(ByVal vMonitor As clsAPBackfeedMonitor)
+    Public EnableSSL As Boolean = False
 
 
     Public Event ChecksGeneratedFoundEvent(ByVal vMonitor As clsAPBackfeedMonitor)
@@ -434,6 +435,7 @@ Public Class clsAPBackfeedMonitor
         isSendSupportEmails = SIAppRoutines.RetrieveParmBoolean("SendSupportEmails", "true")
         isSendEmailWhenChecksAreGenerated = SIAppRoutines.RetrieveParmBoolean("isSendEmailWhenChecksAreGenerated", False)
         isSendEmailWhenBackfeedFound = SIAppRoutines.RetrieveParmBoolean("isSendEmailWhenBackfeedFound", False)
+        EnableSSL = SIAppRoutines.RetrieveParmBoolean("EnableSSL", False)
 
         If _isOkToSendRunTimeParmsEmail Then
             SendRunTimeParmsEmail()
@@ -572,6 +574,8 @@ Public Class clsAPBackfeedMonitor
             .ToName = "AP Backfeed Monitor List"
             .Subject = vSubject
             .Body = vBody
+            .EnableSSL = EnableSSL
+
             Try
                 .Transmit()
             Catch ex As Exception
