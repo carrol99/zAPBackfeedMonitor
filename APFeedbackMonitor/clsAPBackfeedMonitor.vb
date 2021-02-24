@@ -5,9 +5,10 @@ Imports SICommon
 Imports System.Timers
 
 Public Class clsAPBackfeedMonitor
+    Public Version As String = "2.0"
     Dim tTimer As System.Timers.Timer
     Dim _SendMail As SISendMail
-    public log4 as ILog
+    Public log4 As ILog
     Public Event TimerTicked(ByVal vMonitor As clsAPBackfeedMonitor)
     Public Event CheckBackfeedEvent(ByVal vMonitor As clsAPBackfeedMonitor)
     Public Event BackfeedResultsFoundEvent(ByVal vMonitor As clsAPBackfeedMonitor)
@@ -377,7 +378,7 @@ Public Class clsAPBackfeedMonitor
         sbParms.Append("  isSendSupportEmails:" + isSendSupportEmails.ToString() + vbCrLf)
         sbParms.Append("  isSendEmailWhenChecksAreGenerated:" + isSendEmailWhenChecksAreGenerated.ToString() + vbCrLf)
         sbParms.Append("  isSendEmailWhenBackfeedFound:" + isSendEmailWhenBackfeedFound.ToString() + vbCrLf)
- 
+
         Return sbParms.ToString
 
     End Function
@@ -555,7 +556,7 @@ Public Class clsAPBackfeedMonitor
         SendEmailInfo(vSubject, vBody, _siSend)
     End Sub
 
-    Private Sub SendEmailInfo(ByVal vSubject As String, ByVal vBody As String, Optional ByVal vSendMail As SISendMail = Nothing)
+    Public Sub SendEmailInfo(ByVal vSubject As String, ByVal vBody As String, Optional ByVal vSendMail As SISendMail = Nothing)
 
         If vSendMail Is Nothing Then
             Try

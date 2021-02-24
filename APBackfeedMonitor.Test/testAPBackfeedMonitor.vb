@@ -33,12 +33,11 @@ Imports Microsoft.VisualStudio.TestTools.UnitTesting
         log.Info("are backfeed records found:" + isNeedBackFill.ToString())
 
         _monitor.SendEmailInfo("subject sendemailinfo", "body")
-        _monitor.SendEmailInfoException("subject send email info exception", "body")
 
-        _monitor.sendEmailBackfeedNotPresent()
-        _monitor.sendEmailBackfeedIsPresent()
-        _monitor.sendEmailChecksHaveBeenRunToday()
-        _monitor.sendEmailChecksNotRunToday()
+        _monitor.sendBackfeedNotPresent()
+        _monitor.sendBackfeedIsPresent()
+        _monitor.sendChecksHaveBeenRunToday()
+        _monitor.sendChecksNotRunToday()
 
         _monitor.mainBackFeed()
 
