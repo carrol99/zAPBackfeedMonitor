@@ -29,7 +29,7 @@ Partial Class APFeedbackMonitorService
         '   ServicesToRun = New System.ServiceProcess.ServiceBase () {New Service1, New MySecondUserService}
         '
         ServicesToRun = New System.ServiceProcess.ServiceBase() {New APFeedbackMonitorService}
-
+        ' Throw New Exception("Start2")
         System.ServiceProcess.ServiceBase.Run(ServicesToRun)
     End Sub
 
@@ -42,7 +42,7 @@ Partial Class APFeedbackMonitorService
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         components = New System.ComponentModel.Container()
-        Me.ServiceName = "FWC-APFeedbackMonitor"
+        Me.ServiceName = "APFeedbackMonitor"
 
     End Sub
     Friend WithEvents APMonitorEventLog As System.Diagnostics.EventLog

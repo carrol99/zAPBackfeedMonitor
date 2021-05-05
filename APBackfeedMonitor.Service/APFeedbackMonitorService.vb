@@ -5,56 +5,57 @@ Imports System.Net.Mail
 Public Class APFeedbackMonitorService
     Dim _SendMail As SISendMail
 
-    Dim EventLogSource As String = "FWC-APBackfeedMonitor"
-    Dim EventLogLogName As String = "FWC-APBackfeedMonitorLog"
+    Dim EventLogSource As String = "APBackfeedMonitor"
+    Dim EventLogLogName As String = "APBackfeedMonitorLog"
 
     Dim isOkToLogTimerEvent As Boolean = False
     Dim isOkToSendEmail As Boolean = True
 
     Dim WithEvents _APBackfeed As APFeedbackMonitor.clsAPBackfeedMonitor
-    Dim Version As String = "1.0"
+    Dim Version As String = "2.0"
 
     Public Sub New()
         MyBase.New()
 
         ' This call is required by the Windows Form Designer.
-        'InitializeComponent()
+        InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
         If Not System.Diagnostics.EventLog.SourceExists(EventLogSource) Then
             System.Diagnostics.EventLog.CreateEventSource(EventLogSource, EventLogLogName)
         End If
 
-        APMonitorEventLog.Source = EventLogSource
-        APMonitorEventLog.Log = EventLogLogName
+        'APMonitorEventLog.Source = EventLogSource
+        'Throw New Exception("Start up")
+        'APMonitorEventLog.Log = EventLogLogName
     End Sub
 
     Protected Overrides Sub OnStart(ByVal args() As String)
 
-        APMonitorEventLog.WriteEntry("OnStart - Service Starting:" + ServiceName +
-                                     vbCrLf + "Server Name:" + Environment.MachineName +
-                                     vbCrLf + "User Name:" + Environment.UserName +
-                                     vbCrLf + "User Domain:" + Environment.UserDomainName, EventLogEntryType.Information, 1000)
+        'APMonitorEventLog.WriteEntry("OnStart - Service Starting:" + ServiceName +
+        '                             vbCrLf + "Server Name:" + Environment.MachineName +
+        '                             vbCrLf + "User Name:" + Environment.UserName +
+        '                             vbCrLf + "User Domain:" + Environment.UserDomainName, EventLogEntryType.Information, 1000)
 
         Try
             _APBackfeed = New APFeedbackMonitor.clsAPBackfeedMonitor
-            _APBackfeed.GetRunTimeParms()
+            '_APBackfeed.GetRunTimeParms()
 
-            _APBackfeed.StartTimer()
+            ' _APBackfeed.StartTimer()
 
-            isOkToLogTimerEvent = _APBackfeed.isOkToLogTimerEvent
+            'isOkToLogTimerEvent = _APBackfeed.isOkToLogTimerEvent
 
         Catch ex As Exception
-            APMonitorEventLog.WriteEntry("Error in OnStart-" + ex.Message, EventLogEntryType.Error, 9990)
-            MyBase.Stop()
+            'APMonitorEventLog.WriteEntry("Error in OnStart-" + ex.Message, EventLogEntryType.Error, 9990)
+            'MyBase.Stop()
             Throw ex
         End Try
 
-        Dim sRunTimeParms As String
-        sRunTimeParms = _APBackfeed.DisplayRunTimeParms
+        Dim sRunTimeParms As String = ""
+        'sRunTimeParms = _APBackfeed.DisplayRunTimeParms
         sRunTimeParms += "  Service Program Version:" + Version + vbCrLf
 
-        APMonitorEventLog.WriteEntry(sRunTimeParms, EventLogEntryType.Information, 1002)
+        'APMonitorEventLog.WriteEntry(sRunTimeParms, EventLogEntryType.Information, 1002)
 
         Try
             SendSupportEmail("***Support*** AP Feedback Monitor Service Starting", "AP Monitor Service Starting " +
@@ -62,23 +63,23 @@ Public Class APFeedbackMonitorService
                                         vbCrLf + "User Name:" + Environment.UserName +
                                         vbCrLf + "User Domain:" + Environment.UserDomainName)
         Catch ex As Exception
-            APMonitorEventLog.WriteEntry("Error Sending Start EMail--" + ex.Message, EventLogEntryType.Warning, 9991)
+            'APMonitorEventLog.WriteEntry("Error Sending Start EMail--" + ex.Message, EventLogEntryType.Warning, 9991)
         End Try
 
     End Sub
 
     Protected Overrides Sub OnStop()
-        APMonitorEventLog.WriteEntry("OnStop - Service Ending:" + ServiceName +
-                                     vbCrLf + "Server Name:" + Environment.MachineName +
-                                     vbCrLf + "User Name:" + Environment.UserName +
-                                     vbCrLf + "User Domain:" + Environment.UserDomainName, EventLogEntryType.Information, 2000)
+        'APMonitorEventLog.WriteEntry("OnStop - Service Ending:" + ServiceName +
+        '                             vbCrLf + "Server Name:" + Environment.MachineName +
+        '                             vbCrLf + "User Name:" + Environment.UserName +
+        '                             vbCrLf + "User Domain:" + Environment.UserDomainName, EventLogEntryType.Information, 2000)
 
         Try
             _APBackfeed.StopTimer()
             _APBackfeed = Nothing
 
         Catch ex As Exception
-            APMonitorEventLog.WriteEntry("Error Stop Timer-" + ex.Message, EventLogEntryType.Error, 9993)
+            'APMonitorEventLog.WriteEntry("Error Stop Timer-" + ex.Message, EventLogEntryType.Error, 9993)
         End Try
 
         Try
@@ -87,7 +88,7 @@ Public Class APFeedbackMonitorService
                                         vbCrLf + "User Name:" + Environment.UserName +
                                         vbCrLf + "User Domain:" + Environment.UserDomainName)
         Catch ex As Exception
-            APMonitorEventLog.WriteEntry("Error Sending Stop EMail-" + ex.Message, EventLogEntryType.Warning, 9994)
+            'APMonitorEventLog.WriteEntry("Error Sending Stop EMail-" + ex.Message, EventLogEntryType.Warning, 9994)
         End Try
 
     End Sub
