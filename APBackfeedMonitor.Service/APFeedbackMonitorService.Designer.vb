@@ -43,7 +43,10 @@ Partial Class APFeedbackMonitorService
     Private Sub InitializeComponent()
         components = New System.ComponentModel.Container()
         Me.ServiceName = "APFeedbackMonitor"
+        Me.APMonitorEventLog = New System.Diagnostics.EventLog
+        CType(Me.APMonitorEventLog, System.ComponentModel.ISupportInitialize).BeginInit()
 
+        CType(Me.APMonitorEventLog, System.ComponentModel.ISupportInitialize).EndInit()
     End Sub
     Friend WithEvents APMonitorEventLog As System.Diagnostics.EventLog
 End Class
