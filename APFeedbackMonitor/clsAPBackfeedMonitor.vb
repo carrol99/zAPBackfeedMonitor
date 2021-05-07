@@ -5,7 +5,7 @@ Imports SICommon
 Imports System.Timers
 
 Public Class clsAPBackfeedMonitor
-    Public Version As String = "2.0"
+    Public Version As String = "2.0b"
     Dim tTimer As System.Timers.Timer
     Dim _SendMail As SISendMail
     Public log4 As ILog
@@ -31,10 +31,10 @@ Public Class clsAPBackfeedMonitor
     Public dtCheckPrinting As DataTable
     Public isAlreadyCheckedToday As Boolean = False
     Public haveChecksBeenGenerated As Boolean = False
-    Public updateHour As Int32 = 14
-    Public updateMinute As Int32 = 1
-    Public checkChecksHour As Int32 = 10
-    Public checkChecksMinute As Int32 = 15
+    Public updateHour As Int32 = 23
+    Public updateMinute As Int32 = 2
+    Public checkChecksHour As Int32 = 21
+    Public checkChecksMinute As Int32 = 22
     Public isAlreadyProcessing As Boolean = False
     Public isSendSupportEmails As Boolean = True
     Public isTesting As Boolean = False
@@ -173,6 +173,7 @@ Public Class clsAPBackfeedMonitor
         log4.Debug("is backfill need is true ")
 
         Dim areBackfeedRecordsFound As Boolean
+
         areBackfeedRecordsFound = checkForBackfeedRecords()
 
         If areBackfeedRecordsFound = True Then
@@ -192,8 +193,10 @@ Public Class clsAPBackfeedMonitor
 
     Public Function checkForBackfeedRecords() As Boolean
         log4.Debug("checkForBackfeedrecords function")
+
         Dim sDate As String
         Dim queryWhere As String
+
         If DateWeAreChecking.Ticks = 0 Then
             log4.Debug("setting datewearechecking to now")
             DateWeAreChecking = Now
@@ -201,7 +204,7 @@ Public Class clsAPBackfeedMonitor
 
         sDate = SQLUtil.ToDBDate(DateWeAreChecking)
 
-        queryWhere = " date(checkresult.createdate) = '" & sDate & "' "
+        queryWhere = " convert(date, checkresult.createdate) = '" & sDate & "' "
 
         dtCheckResults = RetrieveCheckResults(queryWhere)
 
@@ -275,10 +278,19 @@ Public Class clsAPBackfeedMonitor
         End If
 
         _ODBCDataRoutines.SQLString = sbSQL.ToString
+        log4.Debug("Before retrieve from db:" + sbSQL.ToString())
 
-        dt = _ODBCDataRoutines.getTableFromDB()
+        Try
+            dt = _ODBCDataRoutines.getTableFromDB()
 
-        _ODBCDataRoutines.closeConnection()
+            log4.Debug("After retrieving from db")
+
+            _ODBCDataRoutines.closeConnection()
+
+        Catch ex As Exception
+            log4.Error("Error in RetrieveCheckResults reading db, error:" + ex.Message)
+            Throw ex
+        End Try
 
         log4.Debug("RetrieveCheckResults function - after reading database")
 
@@ -364,7 +376,7 @@ Public Class clsAPBackfeedMonitor
 #Region "Run Time Parms"
     Public Function DisplayRunTimeParms() As String
         Dim sbParms As New StringBuilder
-        sbParms.Append("AP Feedback Monitor Run Time Parms:" + vbCrLf)
+        sbParms.Append("AP Feedback Monitor Run Time Parms:" + Version + "  " + vbCrLf)
         sbParms.Append("  Check Timer Interval:" + _TimerInterval.ToString + vbCrLf)
         sbParms.Append("  Interval Unit:" + _TimerIntervalUnit + vbCrLf)
         sbParms.Append("  Send Email:" + _isOkToEmail.ToString + vbCrLf)
@@ -456,6 +468,8 @@ Public Class clsAPBackfeedMonitor
             Return
         End If
 
+        log4.Debug("Setting isAlreadyProcessing to true")
+
         isAlreadyProcessing = True
 
         RaiseEvent TimerTicked(Me)
@@ -466,6 +480,8 @@ Public Class clsAPBackfeedMonitor
         If _isSendEmailOnTimerTick Then
             SendTimerTickEmail()
         End If
+
+        log4.Debug("Setting isAlreadyProcessing to false")
 
         isAlreadyProcessing = False
 
