@@ -5,7 +5,7 @@ Imports SICommon
 Imports System.Timers
 
 Public Class clsAPBackfeedMonitor
-    Public Version As String = "2.0b"
+    Public Version As String = "2.0c"
     Dim tTimer As System.Timers.Timer
     Dim _SendMail As SISendMail
     Public log4 As ILog
@@ -178,7 +178,11 @@ Public Class clsAPBackfeedMonitor
 
         If areBackfeedRecordsFound = True Then
             log4.Info("back feed records are found")
+
             RaiseEvent BackfeedResultsFoundEvent(Me)
+
+            sendBackfeedIsPresent()
+
             Return True
         End If
 
@@ -209,27 +213,28 @@ Public Class clsAPBackfeedMonitor
         dtCheckResults = RetrieveCheckResults(queryWhere)
 
         If dtCheckResults.Rows.Count > 0 Then
-            log4.Debug("backfeed records are found")
+            log4.Info("backfeed records are found")
+
             Return True
         End If
 
-        log4.Debug("backfeed records NOT found")
+        log4.Info("backfeed records NOT found")
 
         Return False
     End Function
 
     Public Function checkFeedForChecksGenerated() As Boolean
 
-        log4.Debug("checkfeedforchecksgenerated function")
+        log4.Info("checkfeedforchecksgenerated function")
         dtCheckPrinting = RetrieveCheckPrinting()
 
         If (dtCheckPrinting.Rows.Count > 0) Then
-            log4.Debug("checks have been generated")
+            log4.Info("checks have been generated")
 
             Return True
         End If
 
-        log4.Debug("checks have NOT been generated")
+        log4.Info("checks have NOT been generated")
 
         Return False
 
@@ -308,14 +313,14 @@ Public Class clsAPBackfeedMonitor
         body = "4Warranty AP Backfeed ***HAS NOT*** occurred"
         SendEmailInfo(subject, body)
 
-        log4.Debug("send backfeed NOT PRESENT function")
+        log4.Info("send backfeed NOT PRESENT function")
 
         Return True
     End Function
 
     Public Function sendBackfeedIsPresent() As Boolean
         If Not isSendEmailWhenBackfeedFound Then
-            log4.Debug("bypassing sendBackFeed is present email ")
+            log4.Info("bypassing sendBackFeed is present email ")
             Return False
         End If
 
@@ -325,14 +330,14 @@ Public Class clsAPBackfeedMonitor
         body = "4Warranty AP Backfeed  HAS occurred"
         SendEmailInfo(subject, body)
 
-        log4.Debug("send backfeed IS present function")
+        log4.Info("send backfeed IS present function")
 
         Return True
     End Function
 
     Public Function sendChecksNotRunToday()
 
-        log4.Debug("sendChecksNotRunToday function")
+        log4.Info("sendChecksNotRunToday function")
 
         Dim subject As String
         Dim body As String
@@ -347,7 +352,7 @@ Public Class clsAPBackfeedMonitor
 
     Public Function sendChecksHaveBeenRunToday()
 
-        log4.Debug("sendChecksHaveBeenRunToday function")
+        log4.Info("sendChecksHaveBeenRunToday function")
 
         If Not isSendEmailWhenChecksAreGenerated Then
             log4.Debug("bypassing sending checks have been run email ")
@@ -359,7 +364,7 @@ Public Class clsAPBackfeedMonitor
         subject = "4Warranty AP checks Were Generated Today"
         body = "4Warranty AP checks Were Generated Today - " + SQLUtil.ToDBDateTime(Now)
 
-        log4.Debug("Sending checks have run email")
+        log4.Info("Sending checks have run email")
 
         SendEmailInfo(subject, body)
 
