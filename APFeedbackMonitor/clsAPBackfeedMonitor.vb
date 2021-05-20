@@ -42,6 +42,8 @@ Public Class clsAPBackfeedMonitor
     Public isSendEmailWhenBackfeedFound = True
     Public isBypassWeekend = False
     Public isStartupPass As Boolean = True
+    Public ChecksGeneratedDateTime As DateTime
+    Public ChecksResultsGeneratedDateTime As DateTime
 
     Public _ODBCDataRoutines As ODBCDataRoutines
     Public isLogEnabled As Boolean = True
@@ -225,12 +227,15 @@ Public Class clsAPBackfeedMonitor
 
     Public Function checkFeedForChecksGenerated() As Boolean
 
+        ChecksGeneratedDateTime = New DateTime()
+
         log4.Info("checkfeedforchecksgenerated function")
         dtCheckPrinting = RetrieveCheckPrinting()
 
         If (dtCheckPrinting.Rows.Count > 0) Then
             log4.Info("checks have been generated")
-
+            Dim myRow As DataRow = dtCheckPrinting.Rows(0)
+            ChecksGeneratedDateTime = myRow("CREATEDATE")
             Return True
         End If
 
@@ -251,6 +256,7 @@ Public Class clsAPBackfeedMonitor
             sbSQL.Append(" WHERE ")
             sbSQL.Append(vSQLWhere)
         End If
+        sbSQL.Append(" order by uniquekey desc ")
 
         _ODBCDataRoutines.SQLString = sbSQL.ToString
 
@@ -273,6 +279,8 @@ Public Class clsAPBackfeedMonitor
 
         log4.Debug("RetrieveCheckResults function")
 
+        ChecksGeneratedDateTime = New DateTime
+
         Dim sbSQL As New StringBuilder
         sbSQL.Append("SELECT checkResult.*, servicer.ServicerName, servicer.ServiceType FROM checkResult ")
         sbSQL.Append(" LEFT JOIN servicer on servicer.uniquekey = checkResult.iservicer ")
@@ -282,11 +290,14 @@ Public Class clsAPBackfeedMonitor
             sbSQL.Append(vSQLWhere)
         End If
 
+        sbSQL.Append(" order by checkresult.createdate desc ")
         _ODBCDataRoutines.SQLString = sbSQL.ToString
         log4.Debug("Before retrieve from db:" + sbSQL.ToString())
 
         Try
             dt = _ODBCDataRoutines.getTableFromDB()
+
+            ChecksResultsGeneratedDateTime = dt.Rows(0)("createdate")
 
             log4.Debug("After retrieving from db")
 
@@ -327,7 +338,9 @@ Public Class clsAPBackfeedMonitor
         Dim subject As String
         Dim body As String
         subject = "4Warranty AP Backfeed  HAS  occurred"
-        body = "4Warranty AP Backfeed  HAS occurred"
+        body = "4Warranty AP Backfeed  HAS occurred "
+        body += vbCrLf + "Check Results received: " + ChecksResultsGeneratedDateTime.ToString()
+
         SendEmailInfo(subject, body)
 
         log4.Info("send backfeed IS present function")
@@ -359,10 +372,13 @@ Public Class clsAPBackfeedMonitor
             Return False
         End If
 
+        Dim sDate As String = ChecksGeneratedDateTime.ToString()
+
         Dim subject As String
         Dim body As String
         subject = "4Warranty AP checks Were Generated Today"
         body = "4Warranty AP checks Were Generated Today - " + SQLUtil.ToDBDateTime(Now)
+        body += vbCrLf + "Checks generated time: " + sDate
 
         log4.Info("Sending checks have run email")
 
