@@ -259,7 +259,7 @@ Public Class clsAPBackfeedMonitor
             log4.Debug("After retrieving checkprinting records - records found:" + dt.Rows.Count.ToString())
             _ODBCDataRoutines.closeConnection()
         Catch ex As Exception
-            log4.Debug("MySQL Exception retrieving checkprinting records: " + ex.Message)
+            log4.Debug("SQL Exception retrieving checkprinting records: " + ex.Message)
             Throw New Exception()
         End Try
 
