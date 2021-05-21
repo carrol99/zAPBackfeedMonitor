@@ -3,19 +3,23 @@ Imports APFeedbackMonitor
 Imports System.Configuration
 Imports log4net
 Imports Microsoft.VisualStudio.TestTools.UnitTesting
+Imports SICommon
 
 
 <TestClass()> Public Class clsAPBackfeedMonitorTest
     Dim WithEvents _monitor As New clsAPBackfeedMonitor
     Dim log As ILog
     Dim sConnectionString As String
+    Dim sConnectionStringDisplay As String
+
 
     <TestInitialize()> Public Sub setup()
         log4net.Config.XmlConfigurator.Configure()
 
         log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
 
-        sConnectionString = ConfigurationManager.ConnectionStrings("ServerDB").ToString()
+        sConnectionString = ConfigurationManager.ConnectionStrings("OdbcConnection1").ToString()
+        sConnectionStringDisplay = SQLUtil.HideField(sConnectionString, "pwd")
 
         log.Info("Initializing test connection:" + sConnectionString)
 
@@ -40,6 +44,13 @@ Imports Microsoft.VisualStudio.TestTools.UnitTesting
         _monitor.sendChecksNotRunToday()
 
         _monitor.mainBackFeed()
+
+    End Sub
+    <TestMethod()> Public Sub checkFeedForChecksGeneratedTest()
+        _monitor.ConnectionString = sConnectionString
+
+        _monitor.checkFeedForChecksGenerated()
+        _monitor.checkStatusOfFeed()
 
     End Sub
     <TestMethod()> Public Sub checkTest()

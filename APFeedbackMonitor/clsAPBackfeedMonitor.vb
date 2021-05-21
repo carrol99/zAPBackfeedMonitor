@@ -5,7 +5,7 @@ Imports SICommon
 Imports System.Timers
 
 Public Class clsAPBackfeedMonitor
-    Public Version As String = "2.0c"
+    Public Version As String = "2.0g"
     Dim tTimer As System.Timers.Timer
     Dim _SendMail As SISendMail
     Public log4 As ILog
@@ -41,7 +41,7 @@ Public Class clsAPBackfeedMonitor
     Public isSendEmailWhenChecksAreGenerated = True
     Public isSendEmailWhenBackfeedFound = True
     Public isBypassWeekend = False
-    Public isStartupPass As Boolean = True
+    Public isStartupPass As Boolean = False
     Public ChecksGeneratedDateTime As DateTime
     Public ChecksResultsGeneratedDateTime As DateTime
 
@@ -132,6 +132,7 @@ Public Class clsAPBackfeedMonitor
                     log4.Debug("startup pass is true - not sending not found email")
                     isStartupPass = False
                 Else
+                    log4.Debug("calling sendchecksnotruntoday routine")
                     sendChecksNotRunToday()
                 End If
 
@@ -297,7 +298,9 @@ Public Class clsAPBackfeedMonitor
         Try
             dt = _ODBCDataRoutines.getTableFromDB()
 
-            ChecksResultsGeneratedDateTime = dt.Rows(0)("createdate")
+            If dt.Rows.Count > 0 Then
+                ChecksResultsGeneratedDateTime = dt.Rows(0)("createdate")
+            End If
 
             log4.Debug("After retrieving from db")
 
