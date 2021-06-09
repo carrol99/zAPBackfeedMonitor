@@ -35,7 +35,7 @@ Public Class clsAPBackfeedMonitor
     Public haveChecksBeenGenerated As Boolean = False
     Public updateHour As Int32 = 23
     Public updateMinute As Int32 = 2
-    Public updateHourStart As Int32 = 23
+    Public updateHourStart As Int32 = 22
     Public updateMinuteStart As Int32 = 2
     Public checkChecksHour As Int32 = 21
     Public checkChecksMinute As Int32 = 22
@@ -441,8 +441,14 @@ Public Class clsAPBackfeedMonitor
         sbParms.Append("  Server Name:" + Environment.MachineName + vbCrLf)
         sbParms.Append("  updateHour:" + updateHour.ToString() + vbCrLf)
         sbParms.Append("  updateMinute:" + updateMinute.ToString() + vbCrLf)
+        sbParms.Append("  updateHourStart:" + updateHourStart.ToString() + vbCrLf)
+        sbParms.Append("  updateMinuteStart:" + updateMinuteStart.ToString() + vbCrLf)
+
         sbParms.Append("  checkCheckHour:" + checkChecksHour.ToString() + vbCrLf)
         sbParms.Append("  checkCheckMinute:" + checkChecksMinute.ToString() + vbCrLf)
+        sbParms.Append("  checkCheckHourStart:" + checkChecksHourStart.ToString() + vbCrLf)
+        sbParms.Append("  checkCheckMinuteAStart:" + checkChecksMinuteStart.ToString() + vbCrLf)
+
         sbParms.Append("  isSendSupportEmails:" + isSendSupportEmails.ToString() + vbCrLf)
         sbParms.Append("  isSendEmailWhenChecksAreGenerated:" + isSendEmailWhenChecksAreGenerated.ToString() + vbCrLf)
         sbParms.Append("  isSendEmailWhenBackfeedFound:" + isSendEmailWhenBackfeedFound.ToString() + vbCrLf)
@@ -495,10 +501,15 @@ Public Class clsAPBackfeedMonitor
             Boolean.TryParse(sValue, _isOkToLogTimerEvent)
         End If
 
-        updateHour = SIAppRoutines.RetrieveParmString("updateHour", "14")
+        updateHour = SIAppRoutines.RetrieveParmString("updateHour", "23")
         updateMinute = SIAppRoutines.RetrieveParmString("updateMinute", "03")
-        checkChecksHour = SIAppRoutines.RetrieveParmString("checkChecksHour", "12")
+        updateHourStart = SIAppRoutines.RetrieveParmString("updateHourStart", "22")
+        updateMinuteStart = SIAppRoutines.RetrieveParmString("updateMinuteStart", "59")
+        checkChecksHour = SIAppRoutines.RetrieveParmString("checkChecksHour", "21")
         checkChecksMinute = SIAppRoutines.RetrieveParmString("checkChecksMinute", "04")
+        checkChecksHourStart = SIAppRoutines.RetrieveParmString("checkChecksHourStart", "20")
+        checkChecksMinuteStart = SIAppRoutines.RetrieveParmString("checkChecksMinuteStart", "04")
+
         isSendSupportEmails = SIAppRoutines.RetrieveParmBoolean("SendSupportEmails", "true")
         isSendEmailWhenChecksAreGenerated = SIAppRoutines.RetrieveParmBoolean("isSendEmailWhenChecksAreGenerated", False)
         isSendEmailWhenBackfeedFound = SIAppRoutines.RetrieveParmBoolean("isSendEmailWhenBackfeedFound", False)
