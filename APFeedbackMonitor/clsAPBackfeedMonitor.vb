@@ -23,7 +23,9 @@ Public Class clsAPBackfeedMonitor
     Dim isCurrentlyProcessing As Boolean = False
     Public lastCheckDate As New DateTime
     Public checkForUpdateTime As DateTime
+    Public checkForUpdateTimeStart As DateTime
     Public checkForChecksTime As DateTime
+    Public checkForChecksTimeStart As DateTime
     Public isForceCheck As Boolean = False
     Public isBackfillNeeded As Boolean = False
     Public DateWeAreChecking As DateTime
@@ -33,8 +35,12 @@ Public Class clsAPBackfeedMonitor
     Public haveChecksBeenGenerated As Boolean = False
     Public updateHour As Int32 = 23
     Public updateMinute As Int32 = 2
+    Public updateHourStart As Int32 = 23
+    Public updateMinuteStart As Int32 = 2
     Public checkChecksHour As Int32 = 21
     Public checkChecksMinute As Int32 = 22
+    Public checkChecksHourStart As Int32 = 17
+    Public checkChecksMinuteStart As Int32 = 22
     Public isAlreadyProcessing As Boolean = False
     Public isSendSupportEmails As Boolean = True
     Public isTesting As Boolean = False
@@ -81,7 +87,9 @@ Public Class clsAPBackfeedMonitor
             lastCheckDate = timeNow
 
             checkForUpdateTime = New DateTime(timeNow.Year, timeNow.Month, timeNow.Day, updateHour, updateMinute, 0)
+            checkForUpdateTimeStart = New DateTime(timeNow.Year, timeNow.Month, timeNow.Day, updateHourStart, updateMinuteStart, 0)
             checkForChecksTime = New DateTime(timeNow.Year, timeNow.Month, timeNow.Day, checkChecksHour, checkChecksMinute, 0)
+            checkForChecksTimeStart = New DateTime(timeNow.Year, timeNow.Month, timeNow.Day, checkChecksHourStart, checkChecksMinuteStart, 0)
 
             If (checkForChecksTime.DayOfWeek = DayOfWeek.Sunday Or checkForChecksTime.DayOfWeek = DayOfWeek.Saturday) And isBypassWeekend Then
                 log4.Debug("It is the weekend - not checking for updates today")
@@ -105,7 +113,7 @@ Public Class clsAPBackfeedMonitor
         End If
 
         log4.Debug("Prior to checking for checks generated time")
-        If timeNow < checkForChecksTime Then
+        If timeNow < checkForChecksTimeStart Then
             Return
         End If
 
@@ -123,6 +131,11 @@ Public Class clsAPBackfeedMonitor
                 isBackfillNeeded = True
                 isForceCheck = True
             Else
+                If timeNow < checkForChecksTime Then
+                    Return
+                End If
+
+                'only send not generated stuff after the latest check for checks time.
                 log4.Info("Checks have not been generated - mainfeed")
                 'if no checks generated, then don't need to check for results later. So we are done checking for today
                 isAlreadyCheckedToday = True
@@ -133,6 +146,7 @@ Public Class clsAPBackfeedMonitor
                     log4.Debug("startup pass is true - not sending not found email")
                     isStartupPass = False
                 Else
+
                     log4.Debug("calling sendchecksnotruntoday routine")
                     sendChecksNotRunToday()
                 End If
@@ -144,8 +158,8 @@ Public Class clsAPBackfeedMonitor
 
         log4.Debug("Prior to checking for  update time")
 
-        If timeNow < checkForUpdateTime Then
-            log4.Debug("Not time to check for updates yet")
+        If timeNow < checkForUpdateTimeStart Then
+            log4.Debug("Not time to check for updates start yet")
             Return
         End If
 
@@ -153,13 +167,24 @@ Public Class clsAPBackfeedMonitor
 
         RaiseEvent CheckBackfeedEvent(Me)
 
-        checkStatusOfFeed()
+        Dim isBackFeedPresent As Boolean = checkStatusOfFeed()
+
+        If isBackFeedPresent Then
+            isAlreadyCheckedToday = True
+            Return
+        End If
+
+        If timeNow < checkForUpdateTimeStart Then
+            log4.Debug("Not time final time to check for updates yet")
+            Return
+        End If
 
         isAlreadyCheckedToday = True
 
     End Sub
 
     Public Function checkStatusOfFeed() As Boolean
+        Dim timeNow As DateTime = Now
 
         log4.Debug("checkstatusofFeed function")
 
@@ -188,6 +213,11 @@ Public Class clsAPBackfeedMonitor
             sendBackfeedIsPresent()
 
             Return True
+        End If
+
+        If timeNow < checkForUpdateTime Then
+            log4.Debug("Not time to check for updates yet")
+            Return False
         End If
 
         log4.Info("back feed records NOT found")
