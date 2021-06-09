@@ -93,6 +93,7 @@ Public Class clsAPBackfeedMonitor
             haveChecksBeenGenerated = False
             isBackfillNeeded = False
             isForceCheck = False
+            DateWeAreChecking = Now
 
             'set these flags if we are testing and it is past time to get a good read on whether the checks were generated or not.
             If isTesting Then
