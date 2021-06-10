@@ -76,7 +76,7 @@ Public Class clsAPBackfeedMonitor
             log4.Debug("dates match")
             'if we have already checked the results today, no need to do it again
             If isAlreadyCheckedToday Then
-                log4.Debug("isAlreadyChecked")
+                log4.Debug("isAlreadyCheckedToday = true ")
                 Return
             End If
         Else
@@ -174,10 +174,12 @@ Public Class clsAPBackfeedMonitor
             Return
         End If
 
-        If timeNow < checkForUpdateTimeStart Then
+        If timeNow < checkForUpdateTime Then
             log4.Debug("Not time final time to check for updates yet")
             Return
         End If
+
+        log4.Info("Setting isAlreadyCheckedToday TypeOf True")
 
         isAlreadyCheckedToday = True
 
