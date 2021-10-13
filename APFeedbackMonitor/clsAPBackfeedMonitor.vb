@@ -5,7 +5,7 @@ Imports SICommon
 Imports System.Timers
 
 Public Class clsAPBackfeedMonitor
-    Public Version As String = "2.0g"
+    Public Version As String = "2.1"
     Dim tTimer As System.Timers.Timer
     Dim _SendMail As SISendMail
     Public log4 As ILog
