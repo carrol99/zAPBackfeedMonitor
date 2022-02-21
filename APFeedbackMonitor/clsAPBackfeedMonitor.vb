@@ -454,6 +454,7 @@ Public Class clsAPBackfeedMonitor
         sbParms.Append("  isSendSupportEmails:" + isSendSupportEmails.ToString() + vbCrLf)
         sbParms.Append("  isSendEmailWhenChecksAreGenerated:" + isSendEmailWhenChecksAreGenerated.ToString() + vbCrLf)
         sbParms.Append("  isSendEmailWhenBackfeedFound:" + isSendEmailWhenBackfeedFound.ToString() + vbCrLf)
+        sbParms.Append("  isBypassWeekend:" + isBypassWeekend.ToString() + vbCrLf)
 
         Return sbParms.ToString
 
@@ -516,6 +517,7 @@ Public Class clsAPBackfeedMonitor
         isSendEmailWhenChecksAreGenerated = SIAppRoutines.RetrieveParmBoolean("isSendEmailWhenChecksAreGenerated", False)
         isSendEmailWhenBackfeedFound = SIAppRoutines.RetrieveParmBoolean("isSendEmailWhenBackfeedFound", False)
         EnableSSL = SIAppRoutines.RetrieveParmBoolean("EnableSSL", False)
+        isBypassWeekend = SIAppRoutines.RetrieveParmBoolean("isByPassWeekend", False)
 
         If _isOkToSendRunTimeParmsEmail Then
             SendRunTimeParmsEmail()
