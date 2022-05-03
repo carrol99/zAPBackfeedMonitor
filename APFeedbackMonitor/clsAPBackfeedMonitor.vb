@@ -544,12 +544,17 @@ Public Class clsAPBackfeedMonitor
 
         RaiseEvent TimerTicked(Me)
 
-        mainBackFeed()
+        Try
+            mainBackFeed()
 
-        log4.Debug("onTimedEvent After Calling mainBackFeed")
-        If _isSendEmailOnTimerTick Then
-            SendTimerTickEmail()
-        End If
+            log4.Debug("onTimedEvent After Calling mainBackFeed")
+            If _isSendEmailOnTimerTick Then
+                SendTimerTickEmail()
+            End If
+        Catch ex As Exception
+            log4.Error("Error in mainBackFeed routine:" + ex.Message + vbCrLf + ex.StackTrace)
+        End Try
+
 
         log4.Debug("Setting isAlreadyProcessing to false")
 
